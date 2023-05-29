@@ -3,7 +3,7 @@
 #include <GamecubeConsole.hpp>
 #include <N64Console.hpp>
 
-#define VBUS_SENSE_PIN 24
+#define VBUS_SENSE_PIN 41
 
 ConnectedConsole detect_console(uint joybus_pin) {
     gpio_init(VBUS_SENSE_PIN);

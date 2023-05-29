@@ -19,38 +19,42 @@
 
 #include <pico/bootrom.h>
 
+#define LED1 4
+#define LED2 5
+
 CommunicationBackend **backends = nullptr;
 size_t backend_count;
 KeyboardMode *current_kb_mode = nullptr;
 
 GpioButtonMapping button_mappings[] = {
-    {&InputState::l,            5 },
-    { &InputState::left,        4 },
-    { &InputState::down,        3 },
-    { &InputState::right,       2 },
+    {&InputState::l,            16},
+    { &InputState::left,        24},
+    { &InputState::down,        23},
+    { &InputState::right,       22},
 
-    { &InputState::mod_x,       6 },
-    { &InputState::mod_y,       7 },
+    { &InputState::mod_x,       27},
+    { &InputState::mod_y,       26},
+    { &InputState::mod_z,       10},
 
-    { &InputState::select,      10},
-    { &InputState::start,       0 },
-    { &InputState::home,        11},
+    { &InputState::select,      19},
+    { &InputState::start,       21},
+    { &InputState::home,        20},
 
-    { &InputState::c_left,      13},
-    { &InputState::c_up,        12},
-    { &InputState::c_down,      15},
-    { &InputState::a,           14},
-    { &InputState::c_right,     16},
+    { &InputState::c_left,      11},
+    { &InputState::c_up,        13},
+    { &InputState::c_down,      2 },
+    { &InputState::a,           18},
+    { &InputState::c_right,     12},
 
-    { &InputState::b,           26},
-    { &InputState::x,           21},
-    { &InputState::z,           19},
-    { &InputState::up,          17},
+    { &InputState::b,           17},
+    { &InputState::x,           8 },
+    { &InputState::z,           14},
+    { &InputState::up,          25},
 
-    { &InputState::r,           27},
-    { &InputState::y,           22},
-    { &InputState::lightshield, 20},
-    { &InputState::midshield,   18},
+    { &InputState::r,           15},
+    { &InputState::y,           9 },
+    { &InputState::lightshield, 0 },
+    { &InputState::midshield,   1 },
 };
 size_t button_count = sizeof(button_mappings) / sizeof(GpioButtonMapping);
 
@@ -74,10 +78,12 @@ void setup() {
         reset_usb_boot(0, 0);
     }
 
-    // Turn on LED to indicate firmware booted.
-    gpio_init(PICO_DEFAULT_LED_PIN);
-    gpio_set_dir(PICO_DEFAULT_LED_PIN, GPIO_OUT);
-    gpio_put(PICO_DEFAULT_LED_PIN, 1);
+    // Initialize LEDs
+    gpio_init(LED1);
+    gpio_set_dir(LED1, GPIO_OUT);
+    gpio_init(LED2);
+    gpio_set_dir(LED2, GPIO_OUT);
+    gpio_put(LED1, 1);
 
     // Create array of input sources to be used.
     static InputSource *input_sources[] = { gpio_input };
@@ -128,9 +134,9 @@ void setup() {
         backends = new CommunicationBackend *[backend_count] { primary_backend };
     }
 
-    // Default to Melee mode.
+    // Default to Rivals mode.
     primary_backend->SetGameMode(
-        new Melee20Button(socd::SOCD_2IP_NO_REAC, { .crouch_walk_os = false })
+        new RivalsOfAether(socd::SOCD_2IP)
     );
 }
 

@@ -7,7 +7,7 @@
 RivalsOfAether::RivalsOfAether(socd::SocdType socd_type) : ControllerMode(socd_type) {
     _socd_pair_count = 4;
     _socd_pairs = new socd::SocdPair[_socd_pair_count]{
-        socd::SocdPair{&InputState::left,    &InputState::right  },
+        socd::SocdPair{ &InputState::left,   &InputState::right  },
         socd::SocdPair{ &InputState::down,   &InputState::up     },
         socd::SocdPair{ &InputState::c_left, &InputState::c_right},
         socd::SocdPair{ &InputState::c_down, &InputState::c_up   },
@@ -16,19 +16,10 @@ RivalsOfAether::RivalsOfAether(socd::SocdType socd_type) : ControllerMode(socd_t
 
 void RivalsOfAether::UpdateDigitalOutputs(InputState &inputs, OutputState &outputs) {
     outputs.a = inputs.a;
-    outputs.b = inputs.b;
-    outputs.x = inputs.x;
-    outputs.y = inputs.y;
+    outputs.b = inputs.l;
+    outputs.x = inputs.b;
+    outputs.y = inputs.y || inputs.x;
     outputs.buttonR = inputs.z;
-    if (inputs.nunchuk_connected) {
-        // Lightshield with C button.
-        if (inputs.nunchuk_c) {
-            outputs.triggerLAnalog = 49;
-        }
-        outputs.triggerLDigital = inputs.nunchuk_z;
-    } else {
-        outputs.triggerLDigital = inputs.l;
-    }
     outputs.triggerRDigital = inputs.r;
     outputs.start = inputs.start;
     outputs.select = inputs.select;
@@ -106,6 +97,44 @@ void RivalsOfAether::UpdateAnalogOutputs(InputState &inputs, OutputState &output
     }
 
     if (inputs.mod_y) {
+        if (directions.horizontal) {
+            outputs.leftStickX = 128 + (directions.x * 44);
+        }
+
+        if(directions.vertical) {
+            outputs.leftStickY = 128 + (directions.y * 67);
+        }
+
+        /* Extra DI, Air Dodge, and Up B angles */
+        if (directions.diagonal) {
+            outputs.leftStickX = 128 + (directions.x * 44);
+            outputs.leftStickY = 128 + (directions.y * 113);
+
+            // Angles just for DI and Up B
+            if (inputs.c_down) {
+                outputs.leftStickX = 128 + (directions.x * 44);
+                outputs.leftStickY = 128 + (directions.y * 90);
+            }
+
+            // Angles just for DI
+            if (inputs.c_left) {
+                outputs.leftStickX = 128 + (directions.x * 44);
+                outputs.leftStickY = 128 + (directions.y * 74);
+            }
+      
+            if (inputs.c_up) {
+                outputs.leftStickX = 128 + (directions.x * 45);
+                outputs.leftStickY = 128 + (directions.y * 63);
+            }
+     
+            if (inputs.c_right) {
+                outputs.leftStickX = 128 + (directions.x * 47);
+                outputs.leftStickY = 128 + (directions.y * 57);
+            }
+        }
+    }
+
+    if (inputs.mod_z) {
         if (directions.horizontal) {
             outputs.leftStickX = 128 + (directions.x * 44);
         }

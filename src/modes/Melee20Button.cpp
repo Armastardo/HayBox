@@ -159,7 +159,7 @@ void Melee20Button::UpdateAnalogOutputs(InputState &inputs, OutputState &outputs
         }
     }
 
-    if (inputs.mod_y) {
+    if (inputs.mod_y or inputs.mod_z) {
         // MY + Horizontal (even if shield is held) = 3375 = 27
         if (directions.horizontal) {
             outputs.leftStickX = 128 + (directions.x * 27);
