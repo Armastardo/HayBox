@@ -23,20 +23,15 @@ void ProjectM::HandleSocd(InputState &inputs) {
 }
 
 void ProjectM::UpdateDigitalOutputs(InputState &inputs, OutputState &outputs) {
-    outputs.a = inputs.a;
+    outputs.a = inputs.x;
     outputs.b = inputs.b;
-    outputs.x = inputs.x;
-    outputs.y = inputs.y;
-    // True Z press vs macro lightshield + A.
-    if (_options.true_z_press || inputs.mod_x) {
-        outputs.buttonR = inputs.z;
-    } else {
-        outputs.a = inputs.a || inputs.z;
-    }
+    outputs.x = inputs.a;
+    outputs.y = inputs.up;
+    outputs.buttonR = inputs.z;
     if (inputs.nunchuk_connected) {
         outputs.triggerLDigital = inputs.nunchuk_z;
     } else {
-        outputs.triggerLDigital = inputs.l;
+        outputs.triggerLDigital = inputs.y;
     }
     outputs.triggerRDigital = inputs.r;
     outputs.start = inputs.start;
@@ -64,7 +59,7 @@ void ProjectM::UpdateAnalogOutputs(InputState &inputs, OutputState &outputs) {
         inputs.left,
         inputs.right,
         inputs.down,
-        inputs.up,
+        inputs.l,
         inputs.c_left,
         inputs.c_right,
         inputs.c_down,
@@ -84,7 +79,7 @@ void ProjectM::UpdateAnalogOutputs(InputState &inputs, OutputState &outputs) {
         }
     }
 
-    if (inputs.mod_x) {
+    if (inputs.mod_y) {
         if (directions.horizontal) {
             outputs.leftStickX = 128 + (directions.x * 70);
         }
@@ -133,7 +128,7 @@ void ProjectM::UpdateAnalogOutputs(InputState &inputs, OutputState &outputs) {
         }
     }
 
-    if (inputs.mod_y) {
+    if (inputs.mod_x) {
         if (directions.horizontal) {
             outputs.leftStickX = 128 + (directions.x * 35);
         }
@@ -199,7 +194,7 @@ void ProjectM::UpdateAnalogOutputs(InputState &inputs, OutputState &outputs) {
     }
 
     // Send lightshield input if we are using Z = lightshield + A macro.
-    if (inputs.z && !(inputs.mod_x || _options.true_z_press)) {
+    if (inputs.z && !(inputs.mod_y || _options.true_z_press)) {
         outputs.triggerRAnalog = 49;
     }
 
@@ -212,7 +207,7 @@ void ProjectM::UpdateAnalogOutputs(InputState &inputs, OutputState &outputs) {
     }
 
     // Shut off C-stick when using D-Pad layer.
-    if ((inputs.mod_x && inputs.mod_y) || inputs.nunchuk_c) {
+    if ((inputs.mod_y && inputs.mod_x) || inputs.nunchuk_c) {
         outputs.rightStickX = 128;
         outputs.rightStickY = 128;
     }

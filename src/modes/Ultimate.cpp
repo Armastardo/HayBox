@@ -16,20 +16,22 @@ Ultimate::Ultimate(socd::SocdType socd_type) {
 }
 
 void Ultimate::UpdateDigitalOutputs(InputState &inputs, OutputState &outputs) {
-    outputs.a = inputs.a;
     outputs.b = inputs.b;
-    outputs.x = inputs.x;
-    outputs.y = inputs.y;
-    outputs.buttonL = inputs.lightshield;
-    outputs.buttonR = inputs.z || inputs.midshield;
-    outputs.triggerLDigital = inputs.l;
     outputs.triggerRDigital = inputs.r;
+    outputs.a = inputs.x;
+    outputs.triggerLDigital = inputs.y;
+
+    outputs.buttonR = inputs.z || inputs.midshield;
+    outputs.x = inputs.a;
+    outputs.y = inputs.up;
+    
+    outputs.buttonL = inputs.lightshield;
     outputs.start = inputs.start;
     outputs.select = inputs.select;
     outputs.home = inputs.home;
 
     // Turn on D-Pad layer by holding Mod X + Mod Y or Nunchuk C button.
-    if ((inputs.mod_x && inputs.mod_y) || inputs.nunchuk_c) {
+    if ((inputs.mod_y && inputs.l) || inputs.nunchuk_c) {
         outputs.dpadUp = inputs.c_up;
         outputs.dpadDown = inputs.c_down;
         outputs.dpadLeft = inputs.c_left;
@@ -43,7 +45,7 @@ void Ultimate::UpdateAnalogOutputs(InputState &inputs, OutputState &outputs) {
         inputs.left,
         inputs.right,
         inputs.down,
-        inputs.up,
+        inputs.mod_x,
         inputs.c_left,
         inputs.c_right,
         inputs.c_down,
@@ -54,9 +56,9 @@ void Ultimate::UpdateAnalogOutputs(InputState &inputs, OutputState &outputs) {
         outputs
     );
 
-    bool shield_button_pressed = inputs.l || inputs.r;
+    bool shield_button_pressed = inputs.y || inputs.r;
 
-    if (inputs.mod_x) {
+    if (inputs.mod_y) {
         // MX + Horizontal = 6625 = 53
         if (directions.horizontal) {
             outputs.leftStickX = 128 + (directions.x * 53);
@@ -155,7 +157,7 @@ void Ultimate::UpdateAnalogOutputs(InputState &inputs, OutputState &outputs) {
         }
     }
 
-    if (inputs.mod_y) {
+    if (inputs.l) {
         // MY + Horizontal (even if shield is held) = 41
         if (directions.horizontal) {
             outputs.leftStickX = 128 + (directions.x * 41);
@@ -257,7 +259,7 @@ void Ultimate::UpdateAnalogOutputs(InputState &inputs, OutputState &outputs) {
         outputs.rightStickY = 128 + (directions.cy * 68);
     }
 
-    if (inputs.l) {
+    if (inputs.y) {
         outputs.triggerLAnalog = 140;
     }
 
@@ -266,7 +268,7 @@ void Ultimate::UpdateAnalogOutputs(InputState &inputs, OutputState &outputs) {
     }
 
     // Shut off C-stick when using D-Pad layer.
-    if ((inputs.mod_x && inputs.mod_y) || inputs.nunchuk_c) {
+    if ((inputs.mod_y && inputs.l) || inputs.nunchuk_c) {
         outputs.rightStickX = 128;
         outputs.rightStickY = 128;
     }
