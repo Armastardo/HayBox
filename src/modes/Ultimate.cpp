@@ -8,7 +8,7 @@
 Ultimate::Ultimate(socd::SocdType socd_type) : ControllerMode(socd_type) {
     _socd_pair_count = 4;
     _socd_pairs = new socd::SocdPair[_socd_pair_count]{
-        socd::SocdPair{&InputState::left,    &InputState::right  },
+        socd::SocdPair{ &InputState::left,    &InputState::right },
         socd::SocdPair{ &InputState::down,   &InputState::up     },
         socd::SocdPair{ &InputState::c_left, &InputState::c_right},
         socd::SocdPair{ &InputState::c_down, &InputState::c_up   },
@@ -17,13 +17,16 @@ Ultimate::Ultimate(socd::SocdType socd_type) : ControllerMode(socd_type) {
 
 void Ultimate::UpdateDigitalOutputs(InputState &inputs, OutputState &outputs) {
     outputs.a = inputs.a;
-    outputs.b = inputs.b;
-    outputs.x = inputs.x;
-    outputs.y = inputs.y;
-    outputs.buttonL = inputs.lightshield;
-    outputs.buttonR = inputs.z || inputs.midshield;
-    outputs.triggerLDigital = inputs.l;
+    outputs.x = inputs.b;
+    outputs.b = inputs.l;
     outputs.triggerRDigital = inputs.r;
+
+    outputs.triggerLDigital = inputs.c_up;
+    outputs.buttonR = inputs.z || inputs.midshield;
+
+    outputs.y = inputs.y;
+    outputs.buttonL = inputs.x;
+    
     outputs.start = inputs.start;
     outputs.select = inputs.select;
     outputs.home = inputs.home;
@@ -47,14 +50,14 @@ void Ultimate::UpdateAnalogOutputs(InputState &inputs, OutputState &outputs) {
         inputs.c_left,
         inputs.c_right,
         inputs.c_down,
-        inputs.c_up,
+        0,
         ANALOG_STICK_MIN,
         ANALOG_STICK_NEUTRAL,
         ANALOG_STICK_MAX,
         outputs
     );
 
-    bool shield_button_pressed = inputs.l || inputs.r;
+    bool shield_button_pressed = inputs.r;
 
     if (inputs.mod_x) {
         // MX + Horizontal = 6625 = 53
@@ -158,10 +161,10 @@ void Ultimate::UpdateAnalogOutputs(InputState &inputs, OutputState &outputs) {
     if (inputs.mod_y or inputs.mod_z) {
         // MY + Horizontal (even if shield is held) = 41
         if (directions.horizontal) {
-            outputs.leftStickX = 128 + (directions.x * 41);
+            outputs.leftStickX = 128 + (directions.x * 95);
             // MY Horizontal Tilts
             if (inputs.a) {
-                outputs.leftStickX = 128 + (directions.x * 36);
+                outputs.leftStickX = 128 + (directions.x * 56);
             }
         }
         // MY + Vertical (even if shield is held) = 53
@@ -169,7 +172,7 @@ void Ultimate::UpdateAnalogOutputs(InputState &inputs, OutputState &outputs) {
             outputs.leftStickY = 128 + (directions.y * 53);
             // MY Vertical Tilts
             if (inputs.a) {
-                outputs.leftStickY = 128 + (directions.y * 36);
+                outputs.leftStickY = 128 + (directions.y * 56);
             }
         }
         if (directions.diagonal) {
@@ -255,10 +258,6 @@ void Ultimate::UpdateAnalogOutputs(InputState &inputs, OutputState &outputs) {
         // 5250 8500 = 42 68
         outputs.rightStickX = 128 + (directions.cx * 42);
         outputs.rightStickY = 128 + (directions.cy * 68);
-    }
-
-    if (inputs.l) {
-        outputs.triggerLAnalog = 140;
     }
 
     if (inputs.r) {
