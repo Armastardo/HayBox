@@ -20,6 +20,7 @@ void Ultimate::UpdateDigitalOutputs(InputState &inputs, OutputState &outputs) {
     outputs.x = inputs.b;
     outputs.b = inputs.l;
     outputs.triggerRDigital = inputs.r;
+    outputs.leftStickClick = inputs.mod_z;
 
     outputs.triggerLDigital = inputs.c_up;
     outputs.buttonR = inputs.z || inputs.midshield;
