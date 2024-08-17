@@ -158,7 +158,7 @@ void Ultimate::UpdateAnalogOutputs(InputState &inputs, OutputState &outputs) {
         }
     }
 
-    if (inputs.mod_y or inputs.mod_z) {
+    if (inputs.mod_y) {
         // MY + Horizontal (even if shield is held) = 41
         if (directions.horizontal) {
             outputs.leftStickX = 128 + (directions.x * 95);
